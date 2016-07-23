@@ -23,6 +23,9 @@ export default function ({ types: t }) {
           let { deps = [] } = opts;
           deps = deps.map(d => t.stringLiteral(d));
 
+          let { exportName = null } = opts;
+          exportName = exportName ? t.stringLiteral(exportName) : t.nullLiteral();
+
           const systemGlobal = t.identifier(opts.systemGlobal || "System");
 
           const { node } = path;
@@ -31,7 +34,7 @@ export default function ({ types: t }) {
 
           const factory = buildFactory({
             SYSTEM_GLOBAL: systemGlobal,
-            EXPORT_NAME: t.stringLiteral('null'),
+            EXPORT_NAME: exportName,
             BODY: wrapper
           });
 
