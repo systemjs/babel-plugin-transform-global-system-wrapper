@@ -1,4 +1,4 @@
-# babel-plugin-transform-global-system-register-dynamic
+# babel-plugin-transform-global-system-wrapper
 
 Converts global scripts into named `System.registerDynamic('name', [], ...`
 
@@ -7,7 +7,7 @@ Converts global scripts into named `System.registerDynamic('name', [], ...`
 **In**
 
 ```js
-window.foo = {};
+foo = "bar";
 ```
 
 **Out**
@@ -27,7 +27,7 @@ System.registerDynamic("foo", [], false, function ($__require, $__exports, $__mo
 ## Installation
 
 ```sh
-$ npm install babel-plugin-transform-global-system-register-dynamic
+$ npm install babel-plugin-transform-global-system-wrapper
 ```
 
 ## Usage
@@ -39,7 +39,12 @@ $ npm install babel-plugin-transform-global-system-register-dynamic
 ```json
 {
   "plugins": [
-    ["transform-global-system-register-dynamic", {
+    ["transform-global-system-wrapper", {
+      "deps": ["baz.js"],
+      "exportName": "foo",
+      "globals": {
+        "jquery": "jquery.js"
+      },
       "moduleName": "foo",
       "systemGlobal": "SystemJS"
     }]
@@ -50,7 +55,7 @@ $ npm install babel-plugin-transform-global-system-register-dynamic
 ### Via CLI
 
 ```sh
-$ babel --plugins transform-global-system-register-dynamic script.js
+$ babel --plugins transform-global-system-wrapper script.js
 ```
 
 ### Via Node API (Recommended)
@@ -58,12 +63,14 @@ $ babel --plugins transform-global-system-register-dynamic script.js
 ```javascript
 require("babel-core").transform("code", {
   plugins: [
-    ["transform-global-system-register-dynamic", {
+    ["transform-global-system-wrapper", {
+      deps: ["baz.js"],
+      exportName: "foo",
+      globals: {
+        "jquery": "jquery.js"
+      },
       moduleName: "foo",
       systemGlobal: "SystemJS",
-      map: function(name) {
-        return normalize(name);
-      }
     }]
   ]
 });

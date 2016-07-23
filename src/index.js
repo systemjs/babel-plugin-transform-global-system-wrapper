@@ -1,29 +1,30 @@
 import template from "babel-template";
 
-const buildTemplate = template(`
-  SYSTEM_GLOBAL.registerDynamic(MODULE_NAME, [DEPS], false, BODY);
-`);
-
-const buildFactory = template(`
-  (function ($__require, $__exports, $__module) {
-    var _retrieveGlobal = SYSTEM_GLOBAL.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, GLOBALS);
-    (BODY)(this)
-    return _retrieveGlobal();
-  })
-`);
-
-const buildGlobal = template(`
-  $__global[NAME] = VALUE;
-`);
-
 export default function ({ types: t }) {
   const requireIdentifier = t.identifier('$__require');
   const globalIdentifier = t.identifier('$__global');
+
+  const buildTemplate = template(`
+    SYSTEM_GLOBAL.registerDynamic(MODULE_NAME, [DEPS], false, BODY);
+  `);
+
+  const buildFactory = template(`
+    (function ($__require, $__exports, $__module) {
+      var _retrieveGlobal = SYSTEM_GLOBAL.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, GLOBALS);
+      (BODY)(this)
+      return _retrieveGlobal();
+    })
+  `);
+
+  const buildGlobal = template(`
+    $__global[NAME] = VALUE;
+  `);
 
   return {
     visitor: {
       Program: {
         enter({ scope }) {
+          // "import" existing global variables values as `var foo = $__global["foo"];`
           let bindings = scope.getAllBindingsOfKind('var');
           for (let name in bindings) {
             let binding = bindings[name];

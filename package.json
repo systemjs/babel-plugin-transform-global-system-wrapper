@@ -1,10 +1,10 @@
 {
-  "name": "babel-plugin-transform-global-system-register-dynamic",
+  "name": "babel-plugin-transform-global-system-wrapper",
   "version": "0.0.0",
   "description": "Converts global scripts into named System.registerDynamic('name', [], ...",
   "repository": {
     "type": "git",
-    "url": "http://github.com/systemjs/babel-plugin-transform-global-system-register-dynamic.git"
+    "url": "http://github.com/systemjs/babel-plugin-transform-global-system-wrapper.git"
   },
   "author": "",
   "license": "MIT",
