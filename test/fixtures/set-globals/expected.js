@@ -4,9 +4,9 @@ System.registerDynamic([], false, function ($__require, $__exports, $__module) {
     "eggs": $__require("bacon")
   });
 
-  (function () {
+  (function ($__global) {
     var foo = "bar";
-  })();
+  })(this);
 
   return _retrieveGlobal();
 });

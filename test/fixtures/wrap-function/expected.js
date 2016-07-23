@@ -1,11 +1,11 @@
 System.registerDynamic([], false, function ($__require, $__exports, $__module) {
   var _retrieveGlobal = System.get("@@global-helpers").prepareGlobal($__module.id, null, null);
 
-  (function () {
+  (function ($__global) {
     "use strict";
 
     var foo = "bar";
-  })();
+  })(this);
 
   return _retrieveGlobal();
 });

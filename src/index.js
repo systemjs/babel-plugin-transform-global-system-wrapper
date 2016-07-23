@@ -7,7 +7,7 @@ const buildTemplate = template(`
 const buildFactory = template(`
   (function ($__require, $__exports, $__module) {
     var _retrieveGlobal = SYSTEM_GLOBAL.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, GLOBALS);
-    (BODY)()
+    (BODY)(this)
     return _retrieveGlobal();
   })
 `);
@@ -38,7 +38,7 @@ export default function ({ types: t }) {
           const systemGlobal = t.identifier(opts.systemGlobal || "System");
 
           const { node } = path;
-          const wrapper = t.functionExpression(null, [], t.blockStatement(node.body, node.directives));
+          const wrapper = t.functionExpression(null, [t.identifier('$__global')], t.blockStatement(node.body, node.directives));
           node.directives = [];
 
           const factory = buildFactory({
