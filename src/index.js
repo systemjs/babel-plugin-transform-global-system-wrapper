@@ -1,7 +1,7 @@
 import template from "babel-template";
 
 const buildTemplate = template(`
-  SYSTEM_GLOBAL.registerDynamic(MODULE_NAME, [SOURCES], false, BODY);
+  SYSTEM_GLOBAL.registerDynamic(MODULE_NAME, [DEPS], false, BODY);
 `);
 
 const buildFactory = template(`
@@ -12,17 +12,20 @@ const buildFactory = template(`
   })
 `);
 
-export default function ({types: t}) {
+export default function ({ types: t }) {
   return {
     visitor: {
       Program: {
-        exit(path, {opts = {}}) {
-          let moduleName = opts.moduleName || null;
+        exit(path, { opts = {} }) {
+          let { moduleName = null } = opts;
           if (moduleName) moduleName = t.stringLiteral(moduleName);
+
+          let { deps = [] } = opts;
+          deps = deps.map(d => t.stringLiteral(d));
 
           const systemGlobal = t.identifier(opts.systemGlobal || "System");
 
-          const {node} = path;
+          const { node } = path;
           const wrapper = t.functionExpression(null, [], t.blockStatement(node.body, node.directives));
           node.directives = [];
 
@@ -35,7 +38,7 @@ export default function ({types: t}) {
           node.body = [buildTemplate({
             SYSTEM_GLOBAL: systemGlobal,
             MODULE_NAME: moduleName,
-            SOURCES: [],
+            DEPS: deps,
             BODY: factory
           })];
         }
