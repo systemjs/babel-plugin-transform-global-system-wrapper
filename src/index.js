@@ -52,13 +52,18 @@ export default function ({ types: t }) {
             globals = t.objectExpression(properties);
           }
 
-          let bindings = scope.getAllBindings()
+          let bindings = scope.getAllBindings();
           for (let name in bindings) {
             let binding = bindings[name];
-            node.body.push(buildGlobal({
+            var expression = buildGlobal({
               NAME: t.stringLiteral(name),
               VALUE: binding.identifier
-            }));
+            });
+            if (binding.kind === 'var') {
+              node.body.push(expression);
+            } else if (binding.kind === 'hoisted') {
+              node.body.unshift(expression);
+            }
           }
 
           const wrapper = t.functionExpression(null, [globalIdentifier], t.blockStatement(node.body, node.directives));

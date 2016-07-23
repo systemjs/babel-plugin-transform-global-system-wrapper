@@ -2,6 +2,7 @@ System.registerDynamic([], false, function ($__require, $__exports, $__module) {
   var _retrieveGlobal = System.get("@@global-helpers").prepareGlobal($__module.id, null, null);
 
   (function ($__global) {
+    $__global["baz"] = baz;
     var foo = $__global["foo"];
     var foo = function bar() {};
 
@@ -9,7 +10,6 @@ System.registerDynamic([], false, function ($__require, $__exports, $__module) {
       return "qux";
     }
     $__global["foo"] = foo;
-    $__global["baz"] = baz;
   })(this);
 
   return _retrieveGlobal();
