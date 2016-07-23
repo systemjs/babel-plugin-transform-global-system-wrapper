@@ -13,7 +13,7 @@ const buildFactory = template(`
 `);
 
 const buildGlobal = template(`
-  ($__global[NAME])
+  $__global[NAME] = VALUE;
 `);
 
 export default function ({ types: t }) {
@@ -23,8 +23,7 @@ export default function ({ types: t }) {
   return {
     visitor: {
       Program: {
-        enter(path) {
-          let { scope } = path;
+        enter({ scope }) {
           let bindings = scope.getAllBindingsOfKind('var');
           for (let name in bindings) {
             let binding = bindings[name];
@@ -34,7 +33,7 @@ export default function ({ types: t }) {
             });
           }
         },
-        exit(path, { opts = {} }) {
+        exit({ node, scope }, { opts = {} }) {
           let { moduleName = null } = opts;
           if (moduleName) moduleName = t.stringLiteral(moduleName);
 
@@ -53,12 +52,19 @@ export default function ({ types: t }) {
             globals = t.objectExpression(properties);
           }
 
-          const systemGlobal = t.identifier(opts.systemGlobal || "System");
-
-          const { node } = path;
+          let bindings = scope.getAllBindings()
+          for (let name in bindings) {
+            let binding = bindings[name];
+            node.body.push(buildGlobal({
+              NAME: t.stringLiteral(name),
+              VALUE: binding.identifier
+            }));
+          }
 
           const wrapper = t.functionExpression(null, [globalIdentifier], t.blockStatement(node.body, node.directives));
           node.directives = [];
+
+          const systemGlobal = t.identifier(opts.systemGlobal || "System");
 
           const factory = buildFactory({
             SYSTEM_GLOBAL: systemGlobal,

@@ -10,6 +10,7 @@ System.registerDynamic([], false, function ($__require, $__exports, $__module) {
     })();
 
     one = 1;
+    $__global["foo"] = foo;
   })(this);
 
   return _retrieveGlobal();
