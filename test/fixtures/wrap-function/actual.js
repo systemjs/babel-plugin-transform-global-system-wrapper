@@ -1,1 +1,2 @@
-"foo";
+"use strict";
+var foo = "bar";
