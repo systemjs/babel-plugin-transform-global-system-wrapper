@@ -12,10 +12,28 @@ const buildFactory = template(`
   })
 `);
 
+const buildGlobal = template(`
+  ($__global[NAME])
+`);
+
 export default function ({ types: t }) {
+  const requireIdentifier = t.identifier('$__require');
+  const globalIdentifier = t.identifier('$__global');
+
   return {
     visitor: {
       Program: {
+        enter(path) {
+          let { scope } = path;
+          let bindings = scope.getAllBindingsOfKind('var');
+          for (let name in bindings) {
+            let binding = bindings[name];
+            scope.push({
+              id: binding.identifier,
+              init: t.memberExpression(globalIdentifier, t.stringLiteral(name), true)
+            });
+          }
+        },
         exit(path, { opts = {} }) {
           let { moduleName = null } = opts;
           if (moduleName) moduleName = t.stringLiteral(moduleName);
@@ -29,7 +47,7 @@ export default function ({ types: t }) {
           let { globals } = opts;
           if (globals && Object.keys(globals).length) {
             let properties = Object.keys(globals).filter(g => globals[g]).map(g => {
-              let value = t.callExpression(t.identifier('$__require'), [t.stringLiteral(globals[g])]);
+              let value = t.callExpression(requireIdentifier, [t.stringLiteral(globals[g])]);
               return t.objectProperty(t.stringLiteral(g), value);
             });
             globals = t.objectExpression(properties);
@@ -38,7 +56,8 @@ export default function ({ types: t }) {
           const systemGlobal = t.identifier(opts.systemGlobal || "System");
 
           const { node } = path;
-          const wrapper = t.functionExpression(null, [t.identifier('$__global')], t.blockStatement(node.body, node.directives));
+
+          const wrapper = t.functionExpression(null, [globalIdentifier], t.blockStatement(node.body, node.directives));
           node.directives = [];
 
           const factory = buildFactory({

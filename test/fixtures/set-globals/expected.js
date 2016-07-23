@@ -5,7 +5,7 @@ System.registerDynamic([], false, function ($__require, $__exports, $__module) {
   });
 
   (function ($__global) {
-    var foo = "bar";
+    foo = "bar";
   })(this);
 
   return _retrieveGlobal();
