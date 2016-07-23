@@ -60,8 +60,10 @@ export default function ({ types: t }) {
               VALUE: binding.identifier
             });
             if (binding.kind === 'var') {
+              // for globals defined as "var x = 5;" in outer scope, add "$__global.x = x;" at end
               node.body.push(expression);
             } else if (binding.kind === 'hoisted') {
+              // hoist function declaration assignments to the global
               node.body.unshift(expression);
             }
           }
