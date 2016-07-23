@@ -6,7 +6,7 @@ const buildTemplate = template(`
 
 const buildFactory = template(`
   (function ($__require, $__exports, $__module) {
-    var _retrieveGlobal = SYSTEM_GLOBAL.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, null);
+    var _retrieveGlobal = SYSTEM_GLOBAL.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, GLOBALS);
     (BODY)()
     return _retrieveGlobal();
   })
@@ -23,8 +23,17 @@ export default function ({ types: t }) {
           let { deps = [] } = opts;
           deps = deps.map(d => t.stringLiteral(d));
 
-          let { exportName = null } = opts;
+          let { exportName } = opts;
           exportName = exportName ? t.stringLiteral(exportName) : t.nullLiteral();
+
+          let { globals } = opts;
+          if (globals && Object.keys(globals).length) {
+            let properties = Object.keys(globals).filter(g => globals[g]).map(g => {
+              let value = t.callExpression(t.identifier('$__require'), [t.stringLiteral(globals[g])]);
+              return t.objectProperty(t.stringLiteral(g), value);
+            });
+            globals = t.objectExpression(properties);
+          }
 
           const systemGlobal = t.identifier(opts.systemGlobal || "System");
 
@@ -35,6 +44,7 @@ export default function ({ types: t }) {
           const factory = buildFactory({
             SYSTEM_GLOBAL: systemGlobal,
             EXPORT_NAME: exportName,
+            GLOBALS: globals || t.nullLiteral(),
             BODY: wrapper
           });
 
