@@ -1,10 +1,10 @@
 import template from "babel-template";
 
-let buildTemplate = template(`
-  SYSTEM_REGISTER(MODULE_NAME, [SOURCES], false, BODY);
+const buildTemplate = template(`
+  SYSTEM_GLOBAL.registerDynamic(MODULE_NAME, [SOURCES], false, BODY);
 `);
 
-let buildFactory = template(`
+const buildFactory = template(`
   (function ($__require, $__exports, $__module) {
     var _retrieveGlobal = SYSTEM_GLOBAL.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, null);
     (BODY)()
@@ -17,23 +17,23 @@ export default function ({types: t}) {
     visitor: {
       Program: {
         exit(path, {opts = {}}) {
-          let moduleName = this.getModuleName();
+          let moduleName = opts.moduleName || null;
           if (moduleName) moduleName = t.stringLiteral(moduleName);
 
           const systemGlobal = t.identifier(opts.systemGlobal || "System");
 
-          let {node} = path;
-          let wrapper = t.functionExpression(null, [], t.blockStatement(node.body, node.directives));
+          const {node} = path;
+          const wrapper = t.functionExpression(null, [], t.blockStatement(node.body, node.directives));
           node.directives = [];
 
-          let factory = buildFactory({
+          const factory = buildFactory({
             SYSTEM_GLOBAL: systemGlobal,
             EXPORT_NAME: t.stringLiteral('null'),
             BODY: wrapper
           });
 
           node.body = [buildTemplate({
-            SYSTEM_REGISTER: t.memberExpression(systemGlobal, t.identifier("registerDynamic")),
+            SYSTEM_GLOBAL: systemGlobal,
             MODULE_NAME: moduleName,
             SOURCES: [],
             BODY: factory
