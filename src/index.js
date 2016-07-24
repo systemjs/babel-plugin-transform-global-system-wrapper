@@ -35,8 +35,8 @@ export default function ({ types: t }) {
           }
         },
         exit({ node, scope }, { opts = {} }) {
-          let { moduleName = null } = opts;
-          if (moduleName) moduleName = t.stringLiteral(moduleName);
+          let { moduleName } = opts;
+          moduleName = moduleName ? t.stringLiteral(moduleName) : null;
 
           let { deps = [] } = opts;
           deps = deps.map(d => t.stringLiteral(d));
