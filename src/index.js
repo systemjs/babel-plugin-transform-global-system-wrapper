@@ -5,12 +5,11 @@ export default function ({ types: t }) {
   const globalIdentifier = t.identifier('$__global');
 
   const buildTemplate = template(`
-    SYSTEM_GLOBAL.registerDynamic(MODULE_NAME, [DEPS], BODY);
+    SYSTEM_GLOBAL.registerDynamic(MODULE_NAME, [DEPS], false, BODY);
   `);
 
   const buildFactory = template(`
     (function ($__require, $__exports, $__module) {
-      DEP_REQUIRES
       var _retrieveGlobal = SYSTEM_GLOBAL.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, GLOBALS);
       (BODY)(this)
       return _retrieveGlobal();
@@ -20,13 +19,6 @@ export default function ({ types: t }) {
   const buildGlobal = template(`
     $__global[NAME] = VALUE;
   `);
-
-  const buildDepRequires = deps => {
-    let depRequires = [];
-    for (let dep of deps)
-      depRequires.push(t.expressionStatement(t.callExpression(t.Identifier('$__require'), [dep])));
-    return depRequires;
-  };
 
   return {
     visitor: {
@@ -86,8 +78,7 @@ export default function ({ types: t }) {
             SYSTEM_GLOBAL: systemGlobal,
             EXPORT_NAME: exportName,
             GLOBALS: globals || t.nullLiteral(),
-            BODY: wrapper,
-            DEP_REQUIRES: buildDepRequires(deps)
+            BODY: wrapper
           });
 
           node.body = [buildTemplate({

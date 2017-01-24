@@ -1,4 +1,4 @@
-System.registerDynamic([], function ($__require, $__exports, $__module) {
+System.registerDynamic([], false, function ($__require, $__exports, $__module) {
   var _retrieveGlobal = System.get("@@global-helpers").prepareGlobal($__module.id, "foo", null);
 
   (function ($__global) {
