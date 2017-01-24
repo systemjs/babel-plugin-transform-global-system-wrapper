@@ -2,8 +2,6 @@
 
 Converts global scripts into named `System.registerDynamic('name', [], ...`
 
-_For SystemJS 0.19 and below use the 0.0.1 version._
-
 ## Example
 
 **In**
@@ -15,7 +13,7 @@ foo = "bar";
 **Out**
 
 ```js
-System.registerDynamic("foo", [], function ($__require, $__exports, $__module) {
+System.registerDynamic("foo", [], false, function ($__require, $__exports, $__module) {
   var _retrieveGlobal = System.get("@@global-helpers").prepareGlobal($__module.id, "foo", null);
 
   (function ($__global) {
