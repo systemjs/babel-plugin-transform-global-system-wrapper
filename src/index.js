@@ -10,7 +10,7 @@ export default function ({ types: t }) {
 
   const buildFactory = template(`
     (function ($__require, $__exports, $__module) {
-      var _retrieveGlobal = SYSTEM_GLOBAL.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, GLOBALS);
+      var _retrieveGlobal = SYSTEM_GLOBAL.registry.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, GLOBALS);
       (BODY)(this)
       return _retrieveGlobal();
     })
