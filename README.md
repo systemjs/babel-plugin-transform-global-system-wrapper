@@ -14,7 +14,7 @@ foo = "bar";
 
 ```js
 System.registerDynamic("foo", [], false, function ($__require, $__exports, $__module) {
-  var _retrieveGlobal = System.get("@@global-helpers").prepareGlobal($__module.id, "foo", null);
+  var _retrieveGlobal = System.registry.get("@@global-helpers").prepareGlobal($__module.id, "foo", null);
 
   (function ($__global) {
     foo = "bar";
