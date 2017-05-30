@@ -35,15 +35,31 @@ export default function ({ types: t }) {
   return {
     visitor: {
       StringLiteral (path) {
-        if (path.node.value === '__esModule')
+        if (this.opts.esModule && this.functionDepth < 2 && path.node.value === '__esModule')
           this.hasEsModule = true;
       },
       MemberExpression (path) {
-        if (path.node.property.name === '__esModule')
+        if (this.opts.esModule && this.functionDepth < 2 && path.node.property.name === '__esModule')
           this.hasEsModule = true;
+      },
+      ObjectProperty (path) {
+        if (this.opts.esModule && this.functionDepth < 2 && path.node.key.name === '__esModule')
+          this.hasEsModule = true;
+      },
+      Scope: {
+        enter (path) {
+          if (this.opts.esModule && t.isFunction(path.scope.block))
+            this.functionDepth++;
+        },
+        exit (path) {
+          if (this.opts.esModule && t.isFunction(path.scope.block))
+            this.functionDepth--;
+        }
       },
       Program: {
         enter({ scope }) {
+          this.functionDepth = 0;
+
           // "import" existing global variables values as `var foo = $__global["foo"];`
           let bindings = scope.getAllBindingsOfKind('var');
           for (let name in bindings) {
