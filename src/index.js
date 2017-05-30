@@ -16,6 +16,18 @@ export default function ({ types: t }) {
     })
   `);
 
+  const buildFactoryEs = template(`
+    (function ($__require, $__exports, $__module) {
+      var _retrieveGlobal = SYSTEM_GLOBAL.registry.get("@@global-helpers").prepareGlobal($__module.id, EXPORT_NAME, GLOBALS);
+      (BODY)(this)
+      var $__moduleValue = _retrieveGlobal();
+      Object.defineProperty($__moduleValue, '__esModule', {
+        value: true
+      });
+      return $__moduleValue;
+    })
+  `);
+
   const buildGlobal = template(`
     $__global[NAME] = VALUE;
   `);
@@ -74,7 +86,7 @@ export default function ({ types: t }) {
 
           const systemGlobal = t.identifier(opts.systemGlobal || "System");
 
-          const factory = buildFactory({
+          const factory = (opts.esModule ? buildFactoryEs : buildFactory)({
             SYSTEM_GLOBAL: systemGlobal,
             EXPORT_NAME: exportName,
             GLOBALS: globals || t.nullLiteral(),

@@ -71,6 +71,7 @@ require("babel-core").transform("code", {
       },
       moduleName: "foo",
       systemGlobal: "SystemJS",
+      esModule: true
     }]
   ]
 });
