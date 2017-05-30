@@ -34,6 +34,14 @@ export default function ({ types: t }) {
 
   return {
     visitor: {
+      StringLiteral (path) {
+        if (path.node.value === '__esModule')
+          this.hasEsModule = true;
+      },
+      MemberExpression (path) {
+        if (path.node.property.name === '__esModule')
+          this.hasEsModule = true;
+      },
       Program: {
         enter({ scope }) {
           // "import" existing global variables values as `var foo = $__global["foo"];`
@@ -86,7 +94,7 @@ export default function ({ types: t }) {
 
           const systemGlobal = t.identifier(opts.systemGlobal || "System");
 
-          const factory = (opts.esModule ? buildFactoryEs : buildFactory)({
+          const factory = (opts.esModule && !this.hasEsModule ? buildFactoryEs : buildFactory)({
             SYSTEM_GLOBAL: systemGlobal,
             EXPORT_NAME: exportName,
             GLOBALS: globals || t.nullLiteral(),
