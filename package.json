@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-global-system-wrapper",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Converts global scripts into named System.registerDynamic('name', [], ...",
   "repository": {
     "type": "git",
